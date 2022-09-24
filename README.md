@@ -36,3 +36,37 @@ There are 3 query classes:
 * `Query<TEntity, TProjection>`. Queries the TEntity DbSet and must return a TProjection item.
 * `SelfQuery<TEntity>`. Queries the TEntity DbSet and must return the same TEntity.
 * `PaginatedQuery<TEntity, TProjection>`. Has a constructor which receives a page number and page size, and paginates the response.
+
+## Examples
+In the Specification.Examples project there are example queries and a service to view the usage of both elements.
+
+Example query:
+```Csharp
+public class GetPeopleByNameQuery : Query<Person, GetPeopleByNameQueryDto>
+{
+    public string Name { get; }
+
+    public GetPeopleByNameQuery(string name)
+    {
+        Name = name;
+    }
+
+    public override IQueryable<GetPeopleByNameQueryDto> Apply(IQueryable<Person> baseQuery)
+    {
+        return baseQuery.Where(x => x.FirstName == Name)
+            .Select(x => new GetPeopleByNameQueryDto(x.FirstName + " " + x.LastName, x.BirthDate));
+    }
+}
+
+public record GetPeopleByNameQueryDto(string CompleteName, DateTime BirthDate);
+```
+
+Because all the logic is in the query, services don't need extra mapping, so they end up being:
+```Csharp
+public Task<List<GetCatsWithOwnersQueryDto>> GetCats()
+{
+    var query = new GetCatsWithOwnersQuery();
+
+    return _unitOfWork.List(query);
+}
+```
