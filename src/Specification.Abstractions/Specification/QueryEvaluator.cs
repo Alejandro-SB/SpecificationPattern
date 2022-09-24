@@ -12,7 +12,14 @@ internal static class QueryEvaluator
 
         var queryWithIncludes = query.Includes.Aggregate(baseQuery, (acc, q) => (DbSet<TEntity>)acc.Include(q));
         var queryWithStringIncludes = query.StringIncludes.Aggregate(queryWithIncludes, (acc, q) => (DbSet<TEntity>)acc.Include(q));
+        
+        var queryResult = query.Apply(queryWithStringIncludes);
 
-        return query.Apply(queryWithStringIncludes);
+        if (query is PaginatedQuery<TEntity, TProjection> paginate)
+        {
+            return queryResult.Skip(paginate.Size * paginate.Page).Take(paginate.Size);
+        }
+
+        return queryResult;
     }
 }
