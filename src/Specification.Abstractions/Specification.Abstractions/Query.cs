@@ -17,7 +17,7 @@ public abstract class Query<TEntity, TProjection>
         _stringIncludes.Add(predicate);
     }
 
-    public abstract IQueryable<TProjection> Apply(IQueryable<TEntity> baseQuery);
+    public abstract IQueryable<TProjection> Apply(IQueryable<TEntity> query);
 
     public IReadOnlyList<Expression<Func<TEntity, object>>> Includes => _includes.AsReadOnly();
     public IReadOnlyList<string> StringIncludes => _stringIncludes.AsReadOnly();
