@@ -55,4 +55,9 @@ public class UnitOfWork : IUnitOfWork
     {
         _context.Remove(entity);
     }
+
+    public Task<int> SaveChanges(CancellationToken cancellationToken = default)
+    {
+        return _context.SaveChangesAsync(cancellationToken);
+    }
 }
